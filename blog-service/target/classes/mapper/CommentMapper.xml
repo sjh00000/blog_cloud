@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.blogservice.mapper.CommentMapper">
+    <delete id="removeCommentById">
+        delete from comments
+        where id = #{commentId}
+    </delete>
+
+    <select id="getCommentList" resultType="com.example.blogservice.entity.dao.CommentDao">
+        select *
+        from comments
+        where blog_id = #{blogId} and root_comment_id is null and to_comment_id is null
+    </select>
+    <select id="getReplyCommentList" resultType="com.example.blogservice.entity.dao.CommentDao">
+        select *
+        from comments
+        where root_comment_id = #{commentId}
+        order by created_at
+    </select>
+
+    <insert id="editComment"  parameterType="com.example.blogservice.entity.dto.CommentDto">
+        insert into comments(content, user_id, username, blog_id, root_comment_id, to_comment_id)
+        values (#{commentDto.content}, #{commentDto.userId}, #{commentDto.username}, #{commentDto.blogId},
+                #{commentDto.rootCommentId}, #{commentDto.toCommentId})
+    </insert>
+</mapper>

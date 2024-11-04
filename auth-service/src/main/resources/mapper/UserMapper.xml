@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.authservice.mapper.UserMapper">
+
+    <insert id="registerUser">
+        insert into USERS (username, password, email, avatar, status, created, id)
+        values (#{userDao.username}, #{userDao.password}, #{userDao.email}, #{userDao.avatar}, #{userDao.status},
+                #{userDao.created}, #{userDao.id})
+    </insert>
+
+
+    <select id="checkUserExist" resultType="integer">
+        select
+            case when count(1) > 0 then 1  else 0 end as exist
+        from USERS
+        where username = #{username}
+        union
+        select
+            case when count(1) > 0 then 2  else 0 end as exist
+        from USERS
+        where email = #{email}
+    </select>
+    <select id="getUserByUserName" resultType="com.example.authservice.entity.dao.UserDao">
+        select *
+        from USERS
+        WHERE username = #{username}
+    </select>
+    <select id="getUserByUserId" resultType="com.example.authservice.entity.dao.UserDao">
+        select *
+        from users
+        where id = #{userId}
+    </select>
+</mapper>

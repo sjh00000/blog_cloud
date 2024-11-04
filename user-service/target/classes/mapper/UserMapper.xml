@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.userservice.mapper.UserMapper">
+    <update id="updateUserInformation">
+        update users
+        <set>
+            <if test="userDto.username != null">
+                username = #{userDto.username},
+            </if>
+            <if test="userDto.email != null">
+                email = #{userDto.email},
+            </if>
+            <if test="userDto.avatar != null">
+                avatar = #{userDto.avatar},
+            </if>
+        </set>
+        where id = #{userDto.id}
+    </update>
+
+    <select id="getUserByUserName" resultType="com.example.userservice.entity.dao.UserDao">
+        select id, username, avatar, email, status, created
+        from USERS
+        WHERE username = #{username}
+    </select>
+    <select id="getUserByUserId" resultType="com.example.userservice.entity.dao.UserDao">
+        select id, username, avatar, email, status, created
+        from users
+        where id = #{userId}
+    </select>
+</mapper>

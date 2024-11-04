@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.blogservice.mapper.TagMapper">
+    <insert id="addTag">
+        insert into tags(tag_name) values(#{tagName})
+    </insert>
+    <delete id="deleteTag">
+        delete from tags where tag_name = #{tagName}
+    </delete>
+
+    <select id="queryAllTags" resultType="string">
+        select '全部' from dual union  select tag_name from tags
+    </select>
+
+</mapper>

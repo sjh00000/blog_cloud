@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.blogservice.mapper.BlogMapper">
+
+    <insert id="saveBlog">
+        insert into blogs(title, description, content, created, tag, user_id,username)
+        values (#{blogDao.title}, #{blogDao.description}, #{blogDao.content}, #{blogDao.created},
+                #{blogDao.tag}, #{blogDao.userId},#{blogDao.username})
+    </insert>
+
+    <update id="updateBlog">
+        update blogs
+        set title=#{blogDao.title},
+            description=#{blogDao.description},
+            content=#{blogDao.content},
+            created=#{blogDao.created},
+            tag=#{blogDao.tag},
+            user_id=#{blogDao.userId}
+        where id = #{blogDao.id}
+    </update>
+    <delete id="deleteBlog">
+        delete
+        from blogs
+        where id = #{blogId}
+    </delete>
+
+
+    <select id="getBlogList" resultType="com.example.blogservice.entity.dao.BlogDao">
+        select id, username, title, description, created, tag
+        from blogs
+        order by created desc
+    </select>
+    <select id="getBlogById" resultType="com.example.blogservice.entity.dao.BlogDao">
+        select *
+        from blogs
+        where id = #{blogId}
+    </select>
+    <select id="searchBlogsWithList" resultType="com.example.blogservice.entity.dao.BlogDao">
+        select *
+        from blogs
+        <where>
+            <if test="blogList != null and blogList.size() > 0">
+                id in
+            </if>
+            <foreach collection="blogList" item="blog" separator="," open="(" close=")">
+                #{blog.id}
+            </foreach>
+        </where>
+    </select>
+    <select id="queryByTag" resultType="com.example.blogservice.entity.dao.BlogDao">
+        select *
+        from blogs
+        <where>
+            <if test="tag != '全部'">
+                tag = #{tag}
+            </if>
+        </where>
+        order by created desc
+    </select>
+    <select id="getAll" resultType="com.example.blogservice.entity.dao.BlogDao">
+        select * from blogs
+    </select>
+
+</mapper>
