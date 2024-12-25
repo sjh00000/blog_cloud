@@ -60,5 +60,12 @@
     <select id="getAll" resultType="com.example.blogservice.entity.dao.BlogDao">
         select * from blogs
     </select>
+    <select id="searchBlogsWithKey" resultType="com.example.blogservice.entity.dao.BlogDao">
+        select *
+        from blogs
+        where title like concat('%', #{keyword}, '%')
+          or description like concat('%', #{keyword}, '%')
+          or content like concat('%', #{keyword}, '%')
+    </select>
 
 </mapper>

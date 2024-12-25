@@ -34,4 +34,6 @@ public interface BlogMapper extends BaseMapper<BlogDao> {
     void deleteBlog(@Param("blogId")Long blogId);
 
     List<BlogDao> getAll();
+
+    IPage<BlogDao> searchBlogsWithKey(@Param("page") Page<BlogVo> page, @Param("keyword") String keyword);
 }

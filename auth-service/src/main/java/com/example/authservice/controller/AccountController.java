@@ -1,9 +1,9 @@
 package com.example.authservice.controller;
 
+import com.example.commonservice.entity.Result;
 import com.example.authservice.entity.dto.LoginDto;
 import com.example.authservice.entity.dto.RegisterDto;
 import com.example.authservice.entity.vo.UserVo;
-import com.example.authservice.resp.Result;
 import com.example.authservice.service.AuthService;
 import com.example.authservice.utils.JwtUtils;
 import lombok.extern.slf4j.Slf4j;

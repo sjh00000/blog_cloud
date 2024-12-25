@@ -52,7 +52,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDao> implements
         return userVo;
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateUserInformation(UserDto userDto) {
         UserDao userDao = getUserFromRedis(userDto.getId());

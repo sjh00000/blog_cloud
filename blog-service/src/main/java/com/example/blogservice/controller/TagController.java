@@ -1,7 +1,6 @@
 package com.example.blogservice.controller;
 
-import com.example.blogservice.resp.Result;
-import com.example.blogservice.service.BlogService;
+import com.example.commonservice.entity.Result;
 import com.example.blogservice.service.TagService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

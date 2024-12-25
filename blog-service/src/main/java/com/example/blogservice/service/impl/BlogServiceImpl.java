@@ -4,10 +4,11 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.apiservice.entity.dao.ESblog;
+import com.example.apiservice.feign.ElasticsearchFeignClient;
 import com.example.blogservice.entity.dao.BlogDao;
 import com.example.blogservice.entity.dto.BlogDto;
 import com.example.blogservice.entity.vo.BlogVo;
-import com.example.blogservice.feign.ElasticsearchFeignClient;
 import com.example.blogservice.mapper.BlogMapper;
 import com.example.blogservice.service.BlogService;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -83,7 +85,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, BlogDao> implements
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Boolean editBlogDetail(BlogDto blogDto) {
         BlogDao blogDao;
         // 根据博客ID判断是更新现有博客还是创建新博客
@@ -105,8 +107,10 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, BlogDao> implements
                 BeanUtil.copyProperties(blogDto, blogDao, "id", "userId", "username", "created");
                 //修改数据库
                 blogMapper.updateBlog(blogDao);
+                ESblog blogDaoForEs = new ESblog();
+                BeanUtils.copyProperties(blogDao, blogDaoForEs);
                 //修改es(如果es修改失败那么数据库会进行回滚)
-                elasticsearchFeignClient.save(blogDao);
+//                elasticsearchFeignClient.save(blogDaoForEs);
                 return true;
             } else {
                 log.info("未找到对应id的博客");
@@ -123,7 +127,9 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, BlogDao> implements
             //先保存到数据库再修改缓存
             blogMapper.saveBlog(blogDao);
             //添加到es
-            elasticsearchFeignClient.save(blogDao);
+            ESblog blogDaoForEs = new ESblog();
+            BeanUtils.copyProperties(blogDao, blogDaoForEs);
+//            elasticsearchFeignClient.save(blogDaoForEs);
 //            pushBlogToRedis(blogDao);
             return true;
         }
@@ -133,13 +139,30 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, BlogDao> implements
 
     @Override
     public IPage<BlogVo> searchBlogsLikeTitleOrContent(Page<BlogVo> page, String keyword) {
-        //es服务查询匹配数据
-        List<BlogDao> blogList = elasticsearchFeignClient.searchByKeyWord(keyword);
-        log.info("从es中查询到数据为：{}", blogList);
-        IPage<BlogDao> blogDaoIPage = new Page<>();
-        if(!blogList.isEmpty()){
-            blogDaoIPage = blogMapper.searchBlogsWithList(page, blogList);
+        if (keyword == null || keyword.isEmpty()) {
+            IPage<BlogDao> blogDaoPage =blogMapper.getBlogList(page);
+            IPage<BlogVo> blogVoPage = new Page<>();
+            BeanUtils.copyProperties(blogDaoPage, blogVoPage);
+            return blogVoPage;
         }
+        IPage<BlogDao> blogDaoIPage = new Page<>();
+//        //TODO es服务查询匹配数据
+//        List<ESblog> blogApiList = elasticsearchFeignClient.searchByKeyWord(keyword);
+//        List<com.example.blogservice.entity.dao.BlogDao> blogList = blogApiList.stream()
+//                .map(apiBlog -> {
+//                    com.example.blogservice.entity.dao.BlogDao serviceBlog = new com.example.blogservice.entity.dao.BlogDao();
+//                    serviceBlog.setId(apiBlog.getId());
+//                    serviceBlog.setTitle(apiBlog.getTitle());
+//                    serviceBlog.setContent(apiBlog.getContent());
+//                    // 设置其他属性
+//                    return serviceBlog;
+//                })
+//                .collect(Collectors.toList());
+//        log.info("从es中查询到数据为：{}", blogList);
+//        if(!blogList.isEmpty()){
+//            blogDaoIPage = blogMapper.searchBlogsWithList(page, blogList);
+//        }
+        blogDaoIPage = blogMapper.searchBlogsWithKey(page, keyword);
         IPage<BlogVo> blogVoIPage = new Page<>();
         BeanUtils.copyProperties(blogDaoIPage, blogVoIPage);
         return blogVoIPage;
@@ -154,7 +177,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, BlogDao> implements
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void deleteBlog(Long blogId) {
         // 尝试从 Redis 缓存中获取博客信息
         BlogDao cachedBlog = (BlogDao) redisTemplate.opsForHash().get(cacheBlogInfoKey, blogId.toString());

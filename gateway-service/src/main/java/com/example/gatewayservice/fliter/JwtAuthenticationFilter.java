@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,6 +43,7 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
         log.info("未通过");
         HttpHeaders headers = request.getHeaders();
+        log.info("请求头："+headers);
         String accessToken = headers.getFirst("Authorization_Access");
         String refreshToken = headers.getFirst("Authorization_Refresh");
 

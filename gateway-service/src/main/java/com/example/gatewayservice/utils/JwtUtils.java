@@ -78,7 +78,7 @@ public class JwtUtils {
                     .parseClaimsJws(token)
                     .getBody();
         }catch (Exception e){
-            log.info("解析token失败 ：");
+            log.info("解析token失败 ");
             return null;
         }
     }

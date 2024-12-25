@@ -3,9 +3,9 @@ package com.example.blogservice.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.commonservice.entity.Result;
 import com.example.blogservice.entity.dto.BlogDto;
 import com.example.blogservice.entity.vo.BlogVo;
-import com.example.blogservice.resp.Result;
 import com.example.blogservice.service.BlogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

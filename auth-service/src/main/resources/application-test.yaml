@@ -1,0 +1,50 @@
+# DataSource Config
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/vueblog?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+  redis:
+    database: 1
+    host: localhost
+    port: 6379
+    timeout: 5000ms
+  aop:
+    proxy-target-class: true
+  application:
+    name: auth-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+      config:
+        server-addr: localhost:8848
+        group: DEFAULT_GROUP
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**Mapper.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    org.apache.ibatis: warn
+
+
+
+sun-blog:
+  jwt:
+    # 加密秘钥
+    access-secret: f4e2e52034348f86b67cde581c0f9eb5
+    refresh-secret: f4e2e53434348fs45b67cds81c0f9rt5
+    # token有效时长，3小时，单位秒
+    access-expire: 10800
+    # 刷新token有效时长，30天，单位秒
+    refresh-expire: 2592000
+    header: Authorization
+server:
+  address: 0.0.0.0
+  port: 8081
+  active:
+    env: test

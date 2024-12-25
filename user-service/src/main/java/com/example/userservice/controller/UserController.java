@@ -1,8 +1,8 @@
 package com.example.userservice.controller;
 
 
+import com.example.commonservice.entity.Result;
 import com.example.userservice.entity.dto.UserDto;
-import com.example.userservice.resp.Result;
 import com.example.userservice.entity.vo.UserVo;
 import com.example.userservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

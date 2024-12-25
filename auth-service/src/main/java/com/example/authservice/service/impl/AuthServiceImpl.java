@@ -45,7 +45,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, UserDao> implements
 
     private final String cacheUserInfoKey = "user:info";
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Integer registerUser(RegisterDto registerDto) {
         UserDao userDao = new UserDao();
@@ -74,7 +74,6 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, UserDao> implements
         userMapper.registerUser(userDao);
         // 存储到Redis中过期时间1天
         saveUserInfoToRedis(userDao);
-        redisTemplate.expire(cacheUserInfoKey, 1, TimeUnit.HOURS);
         log.info("注册成功{}", userDao);
         return 0;
 
@@ -117,6 +116,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, UserDao> implements
 
     private void saveUserInfoToRedis(UserDao userDao) {
         redisTemplate.opsForHash().put(cacheUserInfoKey, userDao.getUsername(), userDao);
+        redisTemplate.expire(cacheUserInfoKey, 1, TimeUnit.HOURS);
     }
 
     private void deleteBlogFromCache(String username) {
